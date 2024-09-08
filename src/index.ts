@@ -1,13 +1,19 @@
-import { ToolNode } from "@langchain/langgraph/prebuilt";
+import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+import { AIMessage } from "@langchain/core/messages";
 import {
   END,
   MessagesAnnotation,
   START,
   StateGraph,
 } from "@langchain/langgraph";
-import { AIMessage, BaseMessage } from "@langchain/core/messages";
+import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
-import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+
+const systemMessage = {
+  role: 'system',
+  content:
+    `You are a search assistant. Your main job is to look for relevant information on the internet. When asked a question, use the available search tools to find accurate and up-to-date information. Provide concise and informative responses based on the search results. If you need more information to answer a question completely, don't hesitate to perform additional searches.`,
+};
 
 const llm = new ChatOpenAI({
   model: "gpt-4o",
@@ -25,7 +31,7 @@ const callModel = async (state: typeof MessagesAnnotation.State) => {
   const { messages } = state;
 
   const llmWithTools = llm.bindTools(tools);
-  const result = await llmWithTools.invoke(messages);
+  const result = await llmWithTools.invoke([systemMessage, ...messages]);
   return { messages: [result] };
 };
 
