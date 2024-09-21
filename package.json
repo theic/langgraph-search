@@ -1,7 +1,7 @@
 {
   "name": "langgraph-search",
   "description": "LangGraph.js example",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "build": "npm run tsc -- --project tsconfig.json --outDir dist",

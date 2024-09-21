@@ -6,3 +6,4 @@ pdfs/**
 src/generated/**
 .DS_Store
 .vscode
+.streaming

@@ -12,16 +12,19 @@ import { ChatOpenAI } from "@langchain/openai";
 const systemMessage = {
   role: 'system',
   content:
-    `You are a search assistant. Your main job is to look for relevant information on the internet. When asked a question, use the available search tools to find accurate and up-to-date information. Provide concise and informative responses based on the search results. If you need more information to answer a question completely, don't hesitate to perform additional searches.`,
+    `You are a search assistant. Your main job is to look for relevant information on the internet.
+    When asked a question, use the available search tools to find accurate and up-to-date information.
+    Provide concise and informative responses based on the search results.
+    If you need more information to answer a question completely, don't hesitate to perform additional searches.`,
 };
 
 const llm = new ChatOpenAI({
-  model: "gpt-4o",
+  model: 'gpt-4o-mini',
   temperature: 0,
 });
 
 const webSearchTool = new TavilySearchResults({
-  maxResults: 4,
+  maxResults: 3,
 });
 const tools = [webSearchTool];
 
@@ -43,25 +46,12 @@ const shouldContinue = (state: typeof MessagesAnnotation.State) => {
     lastMessage._getType() !== "ai" ||
     !(lastMessage as AIMessage).tool_calls?.length
   ) {
-    // LLM did not call any tools, or it's not an AI message, so we should end.
+
     return END;
   }
   return "tools";
 };
 
-/**
- * MessagesAnnotation is a pre-built state annotation imported from @langchain/langgraph.
- * It is the same as the following annotation:
- *
- * ```typescript
- * const MessagesAnnotation = Annotation.Root({
- *   messages: Annotation<BaseMessage[]>({
- *     reducer: messagesStateReducer,
- *     default: () => [systemMessage],
- *   }),
- * });
- * ```
- */
 const workflow = new StateGraph(MessagesAnnotation)
   .addNode("agent", callModel)
   .addEdge(START, "agent")
